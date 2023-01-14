@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConnectionService } from '../../../common/connection.service';
 import { MetricsRows } from '../../dto/metrics_rows.model';
 import { EmulatedService } from '../emulated/emulated.service';
+import * as fs from 'fs';
+import * as json2csv from 'json2csv';
 
 @Injectable()
 export class MetricsService {
@@ -95,6 +97,18 @@ export class MetricsService {
         : { repositories: formated_response };
     } else {
       return 'La Tribu no se encuentra registrada';
+    }
+  }
+
+  createCsv(data: any) {
+    try {
+      const fields = Object.keys(data.repositories[0]);
+      const opts = { fields };
+      const csv = json2csv.parse(data.repositories, opts);
+      return csv;
+    } catch (err) {
+      console.error(err);
+      return err;
     }
   }
 }

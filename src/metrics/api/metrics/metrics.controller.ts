@@ -26,4 +26,32 @@ export class MetricsController {
     );
     return response.status(HttpStatus.OK).json(data);
   }
+
+  //Generates a csv file
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/download/:id_tribe')
+  async download_repo_per_tribe(
+    @Param('id_tribe', ParseIntPipe) id_tribe: number,
+    @Res() response,
+  ): Promise<any> {
+    const data = await this.MetricsService.get_metrics_per_repo_per_tribe(
+      id_tribe,
+    );
+
+    if (
+      data !=
+        'La Tribu no tiene repositorios que cumplan con la cobertura necesaria' ||
+      'La Tribu no se encuentra registrada'
+    ) {
+      const csv = this.MetricsService.createCsv(data);
+      response.setHeader(
+        'Content-disposition',
+        'attachment; filename=data.csv',
+      );
+      response.setHeader('Content-Type', 'text/csv');
+      return response.status(HttpStatus.OK).send(csv);
+    } else {
+      return response.status(HttpStatus.OK).json(data);
+    }
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "sqltools.connections": [
+    {
+      "pgOptions": {
+        "ssl": true
+      },
+      "previewLimit": 50,
+      "server": "ntt-data-8060.7tt.cockroachlabs.cloud",
+      "driver": "CockroachDB",
+      "name": "ntt",
+      "password": "oIQd35eD0tjc17ghpoaOe",
+      "database": "defaultdb",
+      "username": "anthony",
+      "connectString": "postgresql://anthony:oIQd35eD0tjc17ghpoaOeg@ntt-data-8060.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
+    }
+  ]
+}

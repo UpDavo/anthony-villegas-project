@@ -17,7 +17,7 @@ export class MetricsController {
   //Get id tribe parameter to load results
   @UseGuards(AuthGuard('jwt'))
   @Get('/:id_tribe')
-  async get_repo_per_tribe(
+  async get_metrics_per_repo_per_tribe(
     @Param('id_tribe', ParseIntPipe) id_tribe: number,
     @Res() response,
   ) {
@@ -30,7 +30,7 @@ export class MetricsController {
   //Generates a csv file
   @UseGuards(AuthGuard('jwt'))
   @Get('/download/:id_tribe')
-  async download_repo_per_tribe(
+  async download_metrics_per_repo_per_tribe(
     @Param('id_tribe', ParseIntPipe) id_tribe: number,
     @Res() response,
   ): Promise<any> {

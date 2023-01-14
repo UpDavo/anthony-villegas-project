@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConnectionService } from '../../../common/connection.service';
 import { MetricsRows } from '../../dto/metrics_rows.model';
 import { EmulatedService } from '../emulated/emulated.service';
-import * as fs from 'fs';
 import * as json2csv from 'json2csv';
 
 @Injectable()

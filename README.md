@@ -1,73 +1,92 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Aplicación NestJS con autenticación JWT
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta aplicación utiliza NestJS como framework para el desarrollo de aplicaciones en Node.js y JSON Web Tokens (JWT) para la autenticación de usuarios.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requisitos
 
-## Description
+- Node.js y npm (se recomienda la versión más reciente)
+- Una base de datos (se utiliza cockroachdb para la conexión)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Instalación
 
-## Installation
+- Clona el repositorio en tu equipo: git clone https://github.com/updavo/anthony-villegas-project.git
+- Entra en la carpeta del proyecto: cd anthony-villegas-project
+- Instala las dependencias: npm install
+- Crea un archivo .env en la raíz del proyecto con las variables de entorno necesarias (ver sección de configuración)
+- Arranca el servidor: npm run start
 
-```bash
-$ npm install
+## Configuración
+
+La aplicación utiliza las siguientes variables de entorno:
+
+- DB: url de base de datos (mysql, postgres, etc.).
+- PORT: puerto de ejecución.
+
+## Uso
+
+La aplicación tiene una ruta de inicio de sesión `/login` que acepta como parámetros el nombre de usuario y la contraseña. Si las credenciales son válidas, se genera un JWT que se debe incluir en el encabezado `Authorization` de las peticiones a rutas protegidas.
+
+Ejemplo de petición de inicio de sesión:
+
+```
+POST /auth/login
+Content-Type: application/json
+
+{
+  "username": "mi_usuario",
+  "password": "mi_contraseña"
+}
 ```
 
-## Running the app
+Ejemplo de respuesta:
 
-```bash
-# development
-$ npm run start
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pX3VzdWFyaW8iLCJpYXQiOjE1Nzk5OTk5OTl"
+}
 ```
 
-## Test
+Ejemplo de petición a una ruta protegida con el JWT incluido en el encabezado:
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+GET /ruta-protegida
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pX3VzdWFyaW8iLCJpYXQiOjE1Nzk5OTk5OTl
 ```
 
-## Support
+## Notas adicionales
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Asegúrate de cambiar la cadena secreta utilizada para firmar los JWT en producción por una cadena segura generada por ti.
 
-## Stay in touch
+## Ejemplos de funcionamiento (Retos)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Para los ejemplos es importante recalcar que ya fue generado el token de autenticación.
 
-## License
+### Emulated Endpoint
 
-Nest is [MIT licensed](LICENSE).
+![alt text](/assets/img/emulated_api.jpg?raw=true)
+
+### Organization Endpoint
+
+![alt text](/assets/img/get_organization.jpg?raw=true)
+
+![alt text](/assets/img/set_organization.jpg?raw=true)
+
+![alt text](/assets/img/update_organization.jpg?raw=true)
+
+![alt text](/assets/img/delete_organization.jpg?raw=true)
+
+### Metrics Endpoint
+
+![alt text](/assets/img/get_metrics_per_tribu.png?raw=true)
+
+![alt text](/assets/img/get_metrics_per_tribu_error.jpg?raw=true)
+
+![alt text](/assets/img/get_metrics_per_tribu_download.jpg?raw=true)
+
+## Licencia
+
+El código de esta aplicación está disponible bajo la licencia MIT.

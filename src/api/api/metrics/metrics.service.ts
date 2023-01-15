@@ -43,7 +43,7 @@ export class MetricsService {
     const response: any = await this.ConnectionService.execute_query(query);
     const general_status: object = await this.EmulatedService.getData();
 
-    return this.format_response(response.rows, general_status);
+    return [response.rows, general_status];
   }
 
   //Format the response per tribe

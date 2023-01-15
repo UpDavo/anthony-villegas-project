@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import Config from './common/configuration-variables';
 
 //Main app module
-import { ApiModule } from './metrics/api.module';
+import { ApiModule } from './api/api.module';
 
 //Jwt modules to authenticate
 import { AuthModule } from './auth/auth.module';

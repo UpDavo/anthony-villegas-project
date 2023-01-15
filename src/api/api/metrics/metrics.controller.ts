@@ -20,10 +20,11 @@ export class MetricsController {
   @Get('/:id_tribe')
   async get_metrics_per_repo_per_tribe(
     @Param('id_tribe', ParseIntPipe) id_tribe: number,
-    @Res() response,
+    @Res() response?,
   ) {
     const data: ResponseValidation =
       await this.MetricsService.get_metrics_per_repo_per_tribe(id_tribe);
+    console.log(data);
     if (data.validation.error) {
       return response.status(HttpStatus.OK).json(data.validation.description);
     } else {

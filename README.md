@@ -20,6 +20,7 @@ Esta aplicación utiliza NestJS como framework para el desarrollo de aplicacione
 La aplicación utiliza las siguientes variables de entorno:
 
 - DB: url de base de datos (mysql, postgres, etc.).
+- PORT: puerto de ejecución.
 
 ## Uso
 
@@ -28,7 +29,7 @@ La aplicación tiene una ruta de inicio de sesión `/login` que acepta como par�
 Ejemplo de petición de inicio de sesión:
 
 ```
-POST /login
+POST /auth/login
 Content-Type: application/json
 
 {
@@ -59,6 +60,32 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pX
 ## Notas adicionales
 
 - Asegúrate de cambiar la cadena secreta utilizada para firmar los JWT en producción por una cadena segura generada por ti.
+
+## Ejemplos de funcionamiento (Retos)
+
+Para los ejemplos es importante recalcar que ya fue generado el token de autenticación.
+
+### Emulated Endpoint
+
+![alt text](/assets/img/emulated_api.jpg?raw=true)
+
+### Organization Endpoint
+
+![alt text](/assets/img/get_organization.jpg?raw=true)
+
+![alt text](/assets/img/set_organization.jpg?raw=true)
+
+![alt text](/assets/img/update_organization.jpg?raw=true)
+
+![alt text](/assets/img/delete_organization.jpg?raw=true)
+
+### Metrics Endpoint
+
+![alt text](/assets/img/get_metrics_per_tribu.png?raw=true)
+
+![alt text](/assets/img/get_metrics_per_tribu_error.jpg?raw=true)
+
+![alt text](/assets/img/get_metrics_per_tribu_download.jpg?raw=true)
 
 ## Licencia
 

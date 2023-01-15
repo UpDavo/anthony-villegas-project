@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { MetricsService } from './metrics.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ResponseValidation } from '../../dto/metrics_rows.model';
 
 @Controller('api/metrics')
 export class MetricsController {
@@ -21,10 +22,13 @@ export class MetricsController {
     @Param('id_tribe', ParseIntPipe) id_tribe: number,
     @Res() response,
   ) {
-    const data = await this.MetricsService.get_metrics_per_repo_per_tribe(
-      id_tribe,
-    );
-    return response.status(HttpStatus.OK).json(data);
+    const data: ResponseValidation =
+      await this.MetricsService.get_metrics_per_repo_per_tribe(id_tribe);
+    if (data.validation.error) {
+      return response.status(HttpStatus.OK).json(data.validation.description);
+    } else {
+      return response.status(HttpStatus.OK).json(data.response);
+    }
   }
 
   //Generates a csv file
@@ -33,17 +37,12 @@ export class MetricsController {
   async download_metrics_per_repo_per_tribe(
     @Param('id_tribe', ParseIntPipe) id_tribe: number,
     @Res() response,
-  ): Promise<any> {
-    const data = await this.MetricsService.get_metrics_per_repo_per_tribe(
-      id_tribe,
-    );
+  ) {
+    const data: ResponseValidation =
+      await this.MetricsService.get_metrics_per_repo_per_tribe(id_tribe);
 
-    if (
-      data !=
-        'La Tribu no tiene repositorios que cumplan con la cobertura necesaria' ||
-      'La Tribu no se encuentra registrada'
-    ) {
-      const csv = this.MetricsService.createCsv(data);
+    if (!data.validation.error) {
+      const csv = this.MetricsService.createCsv(data.response);
       response.setHeader(
         'Content-disposition',
         'attachment; filename=data.csv',

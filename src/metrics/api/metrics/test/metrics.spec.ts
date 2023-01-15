@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { MetricsController } from '../metrics.controller';
 import { MetricsService } from '../metrics.service';
 import { ConnectionService } from '../../../../common/connection.service';
+import { EmulatedService } from '../../emulated/emulated.service';
 
 describe('MetricsController', () => {
   let metricsController: MetricsController;
@@ -9,9 +10,9 @@ describe('MetricsController', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [ConnectionService],
+      imports: [],
       controllers: [MetricsController],
-      providers: [MetricsService],
+      providers: [MetricsService, ConnectionService, EmulatedService],
     }).compile();
 
     metricsService = moduleRef.get<MetricsService>(MetricsService);
@@ -20,11 +21,7 @@ describe('MetricsController', () => {
 
   describe('get_metrics_per_repo_per_tribe', () => {
     it('Should show the complete string', async () => {
-      let result: Promise<
-        | 'La Tribu no tiene repositorios que cumplan con la cobertura necesaria'
-        | 'La Tribu no se encuentra registrada'
-        | { repositories: any }
-      >;
+      let result: any;
 
       jest
         .spyOn(metricsService, 'get_metrics_per_repo_per_tribe')

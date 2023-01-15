@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConnectionService } from '../../../common/connection.service';
-import { MetricsRows } from '../../dto/metrics_rows.model';
+import { ResponseValidation } from '../../dto/metrics_rows.model';
 import { EmulatedService } from '../emulated/emulated.service';
 import * as json2csv from 'json2csv';
 
@@ -47,12 +47,13 @@ export class MetricsService {
   }
 
   //Format the response per tribe
-  format_response(response: Array<MetricsRows>, general_status: any) {
+  format_response(response: any, general_status: any): ResponseValidation {
     if (response.length !== 0) {
-      const formated_response = <any>[];
+      const formated_response = [];
       let verificationState: string;
-      response.forEach((row: MetricsRows) => {
-        const temp: any = row;
+
+      response.forEach((row: any) => {
+        const temp = row;
         const verificationStateObject = general_status.repositories.find(
           (item) => item.id == parseInt(row.id),
         );
@@ -92,10 +93,29 @@ export class MetricsService {
       });
 
       return formated_response.length == 0
-        ? 'La Tribu no tiene repositorios que cumplan con la cobertura necesaria'
-        : { repositories: formated_response };
+        ? {
+            response: { repositories: [] },
+            validation: {
+              error: true,
+              description:
+                'La Tribu no tiene repositorios que cumplan con la cobertura necesaria',
+            },
+          }
+        : {
+            response: { repositories: formated_response },
+            validation: {
+              error: false,
+              description: '',
+            },
+          };
     } else {
-      return 'La Tribu no se encuentra registrada';
+      return {
+        response: { repositories: [] },
+        validation: {
+          error: true,
+          description: 'La Tribu no se encuentra registrada',
+        },
+      };
     }
   }
 

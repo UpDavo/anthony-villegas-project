@@ -1,57 +1,59 @@
-import { Injectable } from '@nestjs/common';
-import { ConnectionService } from '../../../common/connection.service';
-import { OrganizationModel } from '../../dto/organization.model';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { organization } from '../../entities/organization.entity';
 
 @Injectable()
 export class OrganizationService {
-  constructor(private ConnectionService: ConnectionService) {}
-
-  //Set a row in organizations
-  async set_organization_row(organizationQuery: OrganizationModel) {
-    const query = `INSERT INTO organization (id_organization, name, status) VALUES (${organizationQuery.id_organization}, '${organizationQuery.name}', '${organizationQuery.status}')`;
-    const response: any = await this.ConnectionService.execute_query(query);
-    return this.validation('Create', response, organizationQuery);
-  }
+  constructor(
+    @InjectRepository(organization)
+    private readonly organizationRepository: Repository<organization>,
+  ) {}
 
   //Get all organizations
-  async get_organizations() {
-    const query = `SELECT * FROM organization`;
-    const response: any = await this.ConnectionService.execute_query(query);
-    return response.rows;
+  async get_organizations(): Promise<organization[]> {
+    const response: organization[] = await this.organizationRepository.find();
+    return response;
+  }
+
+  //Set a row in organizations
+  async set_organization_row(name: string, status: string) {
+    const response: organization = await this.organizationRepository.create({
+      name,
+      status,
+    });
+    return this.organizationRepository.save(response);
   }
 
   //Update a row in organizations
-  async update_organization_row(organizationQuery: OrganizationModel) {
-    const query = `UPDATE organization SET (name, status) = ('${organizationQuery.name}', '${organizationQuery.status}') WHERE id_organization = ${organizationQuery.id_organization};`;
-    const response: any = await this.ConnectionService.execute_query(query);
-    return this.validation('Update', response, organizationQuery);
+  async update_organization_row(
+    id_organization: number,
+    name: string,
+    status: string,
+  ) {
+    const response: organization = await this.organizationRepository.preload({
+      id_organization,
+      name,
+      status,
+    });
+
+    if (!response) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    return response;
   }
 
   //Delete a row in organizations by id
-  async delete_organization_row(id_organization: number) {
-    const query = `DELETE FROM organization WHERE id_organization = ${id_organization};`;
-    const response: any = await this.ConnectionService.execute_query(query);
-    return this.validation('Delete', response, { id: id_organization });
-  }
-
-  //Validate the response
-  validation(process: string, response: any, organizationQuery: any) {
-    let modified_response;
-    if (response.name === undefined) {
-      modified_response = {
-        result: `${process} Row`,
-        detail: organizationQuery,
-      };
-    } else {
-      if (response.detail !== undefined) {
-        modified_response = {
-          result: 'Error in Query',
-          detail: response.detail,
-        };
-      } else {
-        modified_response = { result: 'Error in Query', detail: 'Json Error' };
-      }
+  async delete_organization_row(id: number): Promise<void> {
+    const response: organization = await this.organizationRepository.findOne({
+      where: { id_organization: id },
+    });
+    if (!response) {
+      throw new NotFoundException('Organization not found');
     }
-    return modified_response;
+
+    this.organizationRepository.remove(response);
+    return;
   }
 }

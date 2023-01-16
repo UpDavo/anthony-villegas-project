@@ -1,5 +1,5 @@
 export interface OrganizationModel {
-  id_organization: number;
+  id?: number;
   name: string;
   status: string;
 }

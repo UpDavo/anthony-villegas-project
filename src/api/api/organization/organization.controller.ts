@@ -31,7 +31,10 @@ export class OrganizationController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/setOrganization')
   async set_organization(@Body() request: OrganizationModel, @Res() response) {
-    const data = await this.OrganizationService.set_organization_row(request);
+    const data = await this.OrganizationService.set_organization_row(
+      request.name,
+      request.status,
+    );
     return response.status(HttpStatus.OK).json(data);
   }
 
@@ -43,7 +46,9 @@ export class OrganizationController {
     @Res() response,
   ) {
     const data = await this.OrganizationService.update_organization_row(
-      request,
+      request.id,
+      request.name,
+      request.status,
     );
     return response.status(HttpStatus.OK).json(data);
   }
@@ -52,12 +57,10 @@ export class OrganizationController {
   @UseGuards(AuthGuard('jwt'))
   @Delete('/deleteOrganization/:id_organization')
   async delete_organization(
-    @Param('id_organization', ParseIntPipe) id_organization: number,
+    @Param('id_organization', ParseIntPipe) id: number,
     @Res() response,
   ) {
-    const data = await this.OrganizationService.delete_organization_row(
-      id_organization,
-    );
-    return response.status(HttpStatus.OK).json(data);
+    await this.OrganizationService.delete_organization_row(id);
+    return response.status(HttpStatus.OK).json('removed');
   }
 }

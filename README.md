@@ -19,7 +19,11 @@ Esta aplicación utiliza NestJS como framework para el desarrollo de aplicacione
 
 La aplicación utiliza las siguientes variables de entorno:
 
-- DB: url de base de datos (mysql, postgres, etc.).
+- dbhost: Host de la base de datos.
+- dbport: Puerto de la base de datos.
+- dbusername: Nombre de usuario a usar en la base de datos.
+- dbpassword: Contraseña utilizada para acceder a la base de datos.
+- dbdatabase: Nombre de la base de datos
 - PORT: puerto de ejecución.
 
 ## Uso

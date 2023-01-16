@@ -1,32 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './dto/user.model';
-import { ConnectionService } from 'src/common/connection.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { user } from './user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(private ConnectionService: ConnectionService) {}
+  constructor(
+    @InjectRepository(user)
+    private readonly userRepository: Repository<user>,
+  ) {}
 
   //It create a user to use the app
   async create_user(username: string, password: string) {
-    const response = await this.ConnectionService.execute_query(
-      `INSERT INTO users (username, password) VALUES ('${username}','${password}')`,
-    );
-    return response;
+    const response: user = await this.userRepository.create({
+      username,
+      password,
+    });
+    return this.userRepository.save(response);
   }
 
   //Gets a list of userts
   async get_users() {
-    const response = await this.ConnectionService.execute_query(
-      `SELECT * FROM users')`,
-    );
+    const response = await this.userRepository.find();
     return response;
   }
 
   //Get single user
   async get_user(username: string, password: string) {
-    const response = await this.ConnectionService.execute_query(
-      `SELECT users.username,users.password FROM users WHERE username = '${username}' AND password = '${password}'`,
-    );
-    return response.rows[0];
+    const response = await await this.userRepository.findOne({
+      where: { username: username, password: password },
+    });
+    return response;
   }
 }

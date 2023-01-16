@@ -1,49 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { ConnectionService } from '../../../common/connection.service';
 import { ResponseValidation } from '../../dto/metrics_rows.model';
 import { EmulatedService } from '../emulated/emulated.service';
 import * as json2csv from 'json2csv';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { repository } from '../../entities/repository.entity';
 
 @Injectable()
 export class MetricsService {
   constructor(
-    private ConnectionService: ConnectionService,
     private EmulatedService: EmulatedService,
+    @InjectRepository(repository)
+    private readonly repositoryRepository: Repository<repository>,
   ) {}
 
   //Get Repositories per tribe
   async get_metrics_per_repo_per_tribe(id_tribe: number) {
-    const current_year = new Date().getFullYear();
-    const query = `
-    SELECT 
-      repository.id_repository as id, 
-      repository.name as name, 
-      tribe.name as tribe, 
-      organization.name as organization, 
-      metrics.coverage as coverage, 
-      metrics.code_smells as codeSmells, 
-      metrics.bugs as bugs, 
-      metrics.vulnerabilities as vulnerabilities, 
-      metrics.hotspot as hotspot, 
-      repository.state as state 
-    FROM 
-      repository 
-      INNER JOIN tribe ON repository.id_tribe = tribe.id_tribe 
-      INNER JOIN metrics ON repository.id_repository = metrics.id_repository 
-      INNER JOIN organization ON organization.id_organization = tribe.id_organization 
-    WHERE 
-      repository.id_tribe = ${id_tribe} 
-      AND EXTRACT(
-        year 
-        FROM 
-          repository.create_time
-      ) = ${current_year} 
-      AND repository.state = 'E'
-    `;
-    const response: any = await this.ConnectionService.execute_query(query);
+    // const current_year = new Date().getFullYear();
+
+    const response = await this.repositoryRepository
+      .createQueryBuilder('r')
+      .select('r.id_repository', 'id')
+      .addSelect('r.name', 'name')
+      .addSelect('t.name', 'tribe')
+      .addSelect('o.name', 'organization')
+      .addSelect('m.coverage', 'coverage')
+      .addSelect('m.code_smells', 'codeSmells')
+      .addSelect('m.bugs', 'bugs')
+      .addSelect('m.vulnerabilities', 'vulnerabilities')
+      .addSelect('m.hotspot', 'hotspot')
+      .addSelect('r.state', 'state')
+      .innerJoin('tribe', 't', 'r.id_tribe = t.id_tribe')
+      .innerJoin('metric', 'm', 'r.id_repository = m.id_repository')
+      .innerJoin('organization', 'o', 'o.id_organization = t.id_organization')
+      .where('r.id_tribe = ' + id_tribe + '')
+      .andWhere("r.state = 'E'")
+      .getRawMany();
+
     const general_status: object = await this.EmulatedService.getData();
 
-    return [response.rows, general_status];
+    return [response, general_status];
   }
 
   //Format the response per tribe
